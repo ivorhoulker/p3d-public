@@ -1,19 +1,41 @@
-// src/pages/_app.tsx
 import "../styles/globals.css";
-import { SessionProvider } from "next-auth/react";
-import type { Session } from "next-auth";
-import type { AppType } from "next/app";
-import { trpc } from "../utils/trpc";
+import type { AppProps, AppType } from "next/app";
+import PocketBase from "pocketbase";
+import {
+  QueryClient,
+  QueryClientProvider,
+  Hydrate,
+} from "@tanstack/react-query";
+import { useEffect } from "react";
+import { auth } from "../services/chat";
 
-const MyApp: AppType<{ session: Session | null }> = ({
-  Component,
-  pageProps: { session, ...pageProps },
-}) => {
+export const client = new PocketBase("https://rooftoptheatre.com");
+client.beforeSend = function (url, reqConfig) {
+  // For list of the possible reqConfig properties check
+  // https://developer.mozilla.org/en-US/docs/Web/API/fetch#options
+  reqConfig.headers = Object.assign({}, reqConfig.headers, {
+    Origin: "http://localhost:3000",
+  });
+  console.log(reqConfig);
+  return reqConfig;
+};
+
+export const queryClient = new QueryClient();
+
+type CustomPageProps = { dehydratedState: unknown };
+
+const MyApp = ({ Component, pageProps }: AppProps<CustomPageProps>) => {
+  useEffect(() => {
+    //auth();
+    client.authStore.exportToCookie();
+  }, []);
   return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <Component {...pageProps} />
+      </Hydrate>
+    </QueryClientProvider>
   );
 };
 
-export default trpc.withTRPC(MyApp);
+export default MyApp;

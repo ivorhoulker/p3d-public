@@ -1,7 +1,11 @@
+import { useEffect } from "react";
 import Chat from "../components/Chat";
+import { auth } from "../services/chat";
 import { client } from "./_app";
+import nookies from "nookies";
+import { NextPageContext } from "next";
 
-export default function Page() {
+export default function Page(ctx: NextPageContext) {
   // const [subscription, setSubscription] = useState(false);
   // queryKey equals to ['/posts', { id: 1 }]
   // const variables = { id: "kikbshab5qteg8k" };
@@ -30,22 +34,14 @@ export default function Page() {
   const signOut = () => {
     console.log("sign out");
   };
+  useEffect(() => {
+    //auth();
+    nookies.set(ctx, "pb_auth", client.authStore.exportToCookie());
+  }, []);
   return (
     <div>
       <div className="flex flex-col items-center justify-center gap-2">
-        {/* {client.authStore.isValid && (
-        <p className="text-2xl text-blue-500">
-          Logged in as {JSON.stringify(client.authStore.token)}
-        </p>
-      )} */}
-
-        <button
-          className="rounded-md border border-black bg-violet-50 px-4 py-2 text-xl shadow-lg hover:bg-violet-100"
-          onClick={client.authStore.isValid ? () => signOut() : () => signIn()}
-        >
-          {client.authStore.isValid ? "Sign out" : "Sign in"}
-        </button>
-        <Chat />
+        Login
       </div>
     </div>
   );
