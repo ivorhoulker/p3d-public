@@ -1,21 +1,20 @@
 import { ReactNode, FC } from "react";
-import { usePocketList } from "../hooks/usePocket";
+import { usePocketList } from "../hooks/usePocketList";
+import ChatMessage from "./ChatMessage";
 interface Props {
   className?: string;
   children?: ReactNode;
 }
 const Chat: FC<Props> = ({ className, children }) => {
-  const { data } = usePocketList("roomChats", "chat", {
+  const { data } = usePocketList("roomChats", "chat", true, {
     expand: "profile",
     filter: `room="kikbshab5qteg8k"`,
   });
+  if (!data?.length) return <div>No length!</div>;
   return (
     <div className={className}>
       {data?.reverse().map((x) => (
-        <div key={x.id}>
-          {new Date(x.created).toISOString()}{" "}
-          {x["@expand"].profile?.name || x.userName}: {x.text}
-        </div>
+        <ChatMessage key={x.id} record={x} />
       ))}
     </div>
   );

@@ -8,6 +8,7 @@ import { User } from "pocketbase";
 import nookies from "nookies";
 import { client, queryClient } from "./_app";
 import Chat from "../components/Chat";
+import { prefetchPocketList } from "../hooks/usePocketList";
 
 const getChat = async () => {
   const data = await client.records.getFullList("chat", 100);
@@ -29,7 +30,10 @@ export const getServerSideProps = (ctx: GetServerSidePropsContext) => {
   //     };
   //   }
 
-  queryClient.prefetchQuery(["chat"], getChat);
+  const queryClient = prefetchPocketList("roomChats", "chat", {
+    expand: "profile",
+    filter: `room="kikbshab5qteg8k"`,
+  });
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
@@ -41,8 +45,8 @@ const Profile = ({}: InferGetServerSidePropsType<
   typeof getServerSideProps
 >) => {
   // Show the user. No loading state is required
-  const { data } = useQuery(["chat"], getChat);
-  console.log({ data });
+  //   const { data } = useQuery(["chat"], getChat);
+  //   console.log({ data });
   const { email, id, profile } = client.authStore.model as User;
   return (
     <>

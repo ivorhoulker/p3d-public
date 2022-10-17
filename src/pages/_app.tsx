@@ -10,15 +10,15 @@ import { useEffect } from "react";
 import { auth } from "../services/chat";
 
 export const client = new PocketBase("https://rooftoptheatre.com");
-client.beforeSend = function (url, reqConfig) {
-  // For list of the possible reqConfig properties check
-  // https://developer.mozilla.org/en-US/docs/Web/API/fetch#options
-  reqConfig.headers = Object.assign({}, reqConfig.headers, {
-    Origin: "http://localhost:3000",
-  });
-  console.log(reqConfig);
-  return reqConfig;
-};
+// client.beforeSend = function (url, reqConfig) {
+//   // For list of the possible reqConfig properties check
+//   // https://developer.mozilla.org/en-US/docs/Web/API/fetch#options
+//   reqConfig.headers = Object.assign({}, reqConfig.headers, {
+//     Origin: "http://localhost:3000",
+//   });
+//   console.log(reqConfig);
+//   return reqConfig;
+// };
 
 export const queryClient = new QueryClient();
 
