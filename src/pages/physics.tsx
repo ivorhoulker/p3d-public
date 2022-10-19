@@ -10,6 +10,7 @@ import {
 import { BufferGeometry, DoubleSide, Group, Mesh, Vector3 } from "three";
 import { PerspectiveCamera } from "@react-three/drei";
 import Skydome from "../components/three/Skydome";
+import Player from "../components/three/Player";
 
 const positions: Array<Triplet> = [
   [0, 2, 3],
@@ -119,161 +120,6 @@ export default function App() {
 
 export function PhysicsWorld() {
   //   const targetRef = useRef<Group>(null);
-  const [keyStates, setKeyStates] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    const onKeydown = (event: KeyboardEvent) => {
-      setKeyStates((s) => ({ ...s, [event.key]: true }));
-      //   keyStates[event.code] = true;
-    };
-    const onKeyup = (event: KeyboardEvent) => {
-      setKeyStates((s) => ({ ...s, [event.key]: false }));
-    };
-    //document.addEventListener("mousemove", onMousemove);
-    document.addEventListener("keydown", onKeydown);
-    document.addEventListener("keyup", onKeyup);
-    return () => {
-      document.removeEventListener("keydown", onKeydown);
-      document.removeEventListener("keyup", onKeyup);
-    };
-  });
-
-  //   useFrame((state, delta) => {
-  //     const speed = 15;
-  //     const rotationSpeed = 1;
-
-  //     if (targetRef.current) {
-  //       const moveRight = keyStates.d;
-  //       const moveLeft = keyStates.a;
-  //       const strafeRight = keyStates.e;
-  //       const strafeLeft = keyStates.q;
-  //       const moveForward = keyStates.w;
-  //       const moveBackward = keyStates.s;
-
-  //       targetRef.current.rotateZ(
-  //         moveRight
-  //           ? -rotationSpeed * delta
-  //           : moveLeft
-  //           ? rotationSpeed * delta
-  //           : 0
-  //       );
-  //       targetRef.current.translateX(
-  //         strafeRight ? -speed * delta : strafeLeft ? speed * delta : 0
-  //       );
-  //       targetRef.current.translateY(
-  //         moveForward ? -speed * delta : moveBackward ? speed * delta : 0
-  //       );
-  //       state.camera.lookAt(targetRef.current.position);
-  //       state.camera.updateProjectionMatrix();
-  //     }
-  //   });
-
-  const [ref, api] = useBox(() => ({
-    mass: 10,
-    position: [0, 1, 0],
-    // args: [2, 2, 2],
-    // isKinematic: true,
-    type: "Kinematic",
-    // material: {
-    //   friction: 100,
-    //   restitution: 100,
-    // },
-  }));
-
-  useFrame((state, delta) => {
-    const speed = 5;
-    const rotationSpeed = 500;
-
-    if (ref.current) {
-      const moveRight = keyStates.d;
-      const moveLeft = keyStates.a;
-      const strafeRight = keyStates.e;
-      const strafeLeft = keyStates.q;
-      const moveForward = keyStates.w;
-      const moveBackward = keyStates.s;
-
-      if (moveRight || moveLeft) {
-        const direction = ref.current?.getWorldDirection(new Vector3(0, 0, 1));
-        console.log(direction);
-      }
-      //   api.position.set(
-      //     ref.current.position.x,
-      //     ref.current.position.y,
-      //     moveForward
-      //       ? ref.current.position.z - speed * delta
-      //       : moveBackward
-      //       ? ref.current.position.z + speed * delta
-      //       : 0
-      //   );
-      // ref.current.translateZ(
-      //   moveForward ? -speed * delta : moveBackward ? speed * delta : 0
-      // );
-      // api.rotation.set(
-      //   0,
-      //   moveRight
-      //     ? ref.current.rotation.y - rotationSpeed * delta
-      //     : moveLeft
-      //     ? ref.current.rotation.y + rotationSpeed * delta
-      //     : 0,
-      //   0
-      // );
-      // const t = state.clock.getElapsedTime();
-      // api.position.set(0, 3, Math.cos(t * 2) * 5);
-      // api.rotation.set(Math.cos(t * 6), 0, 1);
-      // api.applyLocalForce([10, 1, 1], [1, 1, 1]);
-
-      api.angularVelocity.set(
-        0,
-        moveRight
-          ? -rotationSpeed * delta
-          : moveLeft
-          ? rotationSpeed * delta
-          : 0,
-        0
-      );
-      const vel = new Vector3(
-        strafeRight ? delta : strafeLeft ? -delta : 0,
-        0,
-        moveForward ? -delta : moveBackward ? delta : 0
-      )
-        .normalize()
-        .multiply(new Vector3(speed, 0, speed));
-      vel.applyQuaternion(
-        ref.current.getWorldQuaternion(ref.current.quaternion)
-      );
-
-      // const targetVector = moveForward
-      //   ? new Vector3(0, 0, 1)
-      //   : new Vector3(0, 0, 0);
-      // targetVector.applyQuaternion(
-      //   ref.current.getWorldQuaternion(ref.current.quaternion)
-      // );
-      // if (moveForward) console.log(ref.current.rotation);
-      // var axis = new Vector3( 0, 1, 0 );
-      // var angle = Math.PI / 2;
-      // vel.applyQuaternion(ref.current.quaternion);
-      // console.log(ref.current.rotation);
-      // vel
-      //   .applyQuaternion(ref.current.getWorldQuaternion(ref.current.quaternion))
-      //   .normalize();
-
-      api.velocity.set(vel.x, vel.y, vel.z);
-      state.camera.lookAt(ref.current.position);
-      state.camera.updateProjectionMatrix();
-      // api.rotation.set(-Math.PI / 2 - 0 * 0.2, 0, ref.current.z + 1 * 0.5);
-      // if (moveForward || moveBackward)
-      //   api.applyLocalForce(
-      //     [
-      //       moveForward ? -speed * delta : moveBackward ? speed * delta : 0,
-      //       0,
-      //       0,
-      //     ],
-      //     [0, 0, 0]
-      //   );
-      // state.camera.lookAt(ref.current.position);
-      // state.camera.updateProjectionMatrix();
-    }
-  });
 
   return (
     <Suspense fallback={null}>
@@ -281,25 +127,16 @@ export function PhysicsWorld() {
         <Box position={position} key={idx} />
       ))}
       <Plane />
-      <PerspectiveCamera
+      {/* <PerspectiveCamera
         //   up={[0, 0, 1]}
         makeDefault
         position={[0, 30, 0]}
         args={[45, 1.2, 1, 1000]}
-      />
-      <mesh
-        ref={ref as React.Ref<Mesh<BufferGeometry>>}
-        position={[0, 0, 0]}
-        castShadow
-      >
-        <boxBufferGeometry attach="geometry" args={[2, 2, 2]} />
-        <meshStandardMaterial color="red" />
-        <meshPhysicalMaterial />
-      </mesh>
-
+      /> */}
+      <Player />
       {/* <group ref={targetRef} position={[0, 0, 1]}>
         
-        
+      
       </group> */}
       {/* <Box position={[11, 0, 11]} /> */}
     </Suspense>
