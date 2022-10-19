@@ -1,7 +1,8 @@
 import { Physics } from "@react-three/cannon";
 import { Effects, PerspectiveCamera, Plane, Stars } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import React, { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame } from "react-three-fiber";
+
 import { Group } from "three";
 import Camera from "../components/three/Camera";
 import FPSControls from "../components/three/FPSControls";
@@ -82,6 +83,8 @@ export function PhysicsWorld() {
     if (targetRef.current) {
       const moveRight = keyStates.d;
       const moveLeft = keyStates.a;
+      const strafeRight = keyStates.e;
+      const strafeLeft = keyStates.q;
       const moveForward = keyStates.w;
       const moveBackward = keyStates.s;
       targetRef.current.rotateZ(
@@ -91,12 +94,12 @@ export function PhysicsWorld() {
           ? rotationSpeed * delta
           : 0
       );
-      const rotation = targetRef.current.matrix.extractRotation;
-      targetRef.current.matrix.targetRef.current.position.y += moveForward
-        ? -speed * delta
-        : moveBackward
-        ? speed * delta
-        : 0;
+      targetRef.current.translateX(
+        strafeRight ? -speed * delta : strafeLeft ? speed * delta : 0
+      );
+      targetRef.current.translateY(
+        moveForward ? -speed * delta : moveBackward ? speed * delta : 0
+      );
       state.camera.lookAt(targetRef.current.position);
       state.camera.updateProjectionMatrix();
     }
@@ -112,7 +115,7 @@ export function PhysicsWorld() {
         <PerspectiveCamera
           up={[0, 0, 1]}
           makeDefault
-          position={[0, 15, 5]}
+          position={[0, 20, 5]}
           args={[45, 1.2, 1, 1000]}
         />
         <mesh castShadow receiveShadow position={[0, 2, 0]}>
