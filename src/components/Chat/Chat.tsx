@@ -1,11 +1,11 @@
 import { ReactNode, FC } from "react";
-import { usePocketList } from "../hooks/usePocketList";
+import { usePocketList } from "../../hooks/usePocketList";
 import ChatMessage from "./ChatMessage";
 interface Props {
   className?: string;
   children?: ReactNode;
 }
-const Chat: FC<Props> = ({ className, children }) => {
+const Chat: FC<Props> = ({ className }) => {
   const { data } = usePocketList("roomChats", "chat", true, {
     expand: "profile",
     filter: `room="kikbshab5qteg8k"`,

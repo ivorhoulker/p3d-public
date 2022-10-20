@@ -7,9 +7,8 @@ import {
   Hydrate,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { auth } from "../services/chat";
 
-export const client = new PocketBase("https://rooftoptheatre.com");
+export const client = new PocketBase(process.env.DATABASE_URL);
 // client.beforeSend = function (url, reqConfig) {
 //   // For list of the possible reqConfig properties check
 //   // https://developer.mozilla.org/en-US/docs/Web/API/fetch#options

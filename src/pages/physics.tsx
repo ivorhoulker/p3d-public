@@ -1,81 +1,23 @@
-import React, { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import {
-  Physics,
-  Triplet,
-  useBox,
-  usePlane,
-  useSphere,
-} from "@react-three/cannon";
-import { BufferGeometry, DoubleSide, Group, Mesh, Vector3 } from "three";
-import { PerspectiveCamera } from "@react-three/drei";
-import Skydome from "../components/three/Skydome";
-import Player from "../components/three/Player";
+import React, { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Debug, Physics, Triplet } from "@react-three/cannon";
+import SkyBox from "../components/r3f/SkyBox";
+import Player from "../components/r3f/Player";
+import { Plane } from "../components/r3f/Plane";
+import { Box } from "../components/r3f/Box";
+import { Ball } from "../components/r3f/Ball";
 
-const positions: Array<Triplet> = [
-  [0, 2, 3],
+const boxPositions: Array<Triplet> = [
   [-1, 5, 16],
   [-2, 5, -10],
-  [0, 12, 3],
   [-10, 5, 16],
   [8, 5, -10],
 ];
 
-function Marble() {
-  const [ref] = useSphere(() => ({
-    mass: 10,
-    position: [2, 5, 0],
-  }));
-
-  return (
-    <mesh ref={ref as React.Ref<Mesh<BufferGeometry>>} castShadow>
-      <sphereBufferGeometry
-        attach="geometry"
-        args={[1, 32, 32]}
-      ></sphereBufferGeometry>
-      <meshStandardMaterial color="white" />
-    </mesh>
-  );
-}
-
-function Box({ position }: { position: Triplet }) {
-  const [ref] = useBox(() => ({
-    mass: 10,
-    position: position,
-    type: "Dynamic",
-    args: [2, 2, 2],
-  }));
-
-  return (
-    <mesh ref={ref as React.Ref<Mesh<BufferGeometry>>} castShadow>
-      <boxBufferGeometry attach="geometry" args={[2, 2, 2]} />
-      <meshStandardMaterial color="white" />
-    </mesh>
-  );
-}
-
-const Plane = () => {
-  const [ref, api] = usePlane(() => ({
-    mass: 1,
-    position: [0, 0, 0],
-    type: "Static",
-    rotation: [-Math.PI / 2, 0, 0],
-  }));
-  //   useFrame(({ mouse }) => {
-  //     api.rotation.set(-Math.PI / 2 - mouse.y * 0.2, 0 + mouse.x * 0.2, 0);
-  //   });
-
-  return (
-    <mesh
-      scale={200}
-      ref={ref as React.Ref<Mesh<BufferGeometry>>}
-      receiveShadow
-    >
-      <planeBufferGeometry />
-      <meshStandardMaterial color="white" side={DoubleSide} roughness={100} />
-    </mesh>
-  );
-};
+const ballPositions: Array<Triplet> = [
+  [-5, 1, 11],
+  [15, 5, 5],
+];
 
 export default function App() {
   return (
@@ -84,35 +26,12 @@ export default function App() {
       <fog attach="fog" args={["#94ebd8", 0, 60]} />
       <ambientLight intensity={0.1} color={"orange"} />
       <directionalLight intensity={0.1} castShadow />
-      {/* <pointLight
-        castShadow
-        intensity={1}
-        color="white"
-        // args={[0xff0000, 1, 100]}
-        position={[-1, 3, 1]}
-      /> */}
-      <spotLight
-        castShadow
-        intensity={1}
-        color="yellow"
-        // args={["blue", 1, 100]}
-        position={[-1, 4, -1]}
-        penumbra={1}
-      />
-      <Skydome />
-      <Physics
-      // gravity={[0, -1000, 0]}
-      // frictionGravity={[100, 100, 100]}
-      // defaultContactMaterial={{
-      //   friction: 100,
-      //   restitution: 100,
-      //   contactEquationStiffness: 6000,
-      //   contactEquationRelaxation: 0.000001,
-      // }}
-      >
-        {/* <Marble /> */}
 
+      <SkyBox />
+      <Physics gravity={[0, -9.8, 0]}>
+        {/* <Debug scale={1.1} color="black"> */}
         <PhysicsWorld />
+        {/* </Debug> */}
       </Physics>
     </Canvas>
   );
@@ -123,8 +42,11 @@ export function PhysicsWorld() {
 
   return (
     <Suspense fallback={null}>
-      {positions.map((position, idx) => (
+      {boxPositions.map((position, idx) => (
         <Box position={position} key={idx} />
+      ))}
+      {ballPositions.map((position, idx) => (
+        <Ball position={position} key={idx} />
       ))}
       <Plane />
       {/* <PerspectiveCamera

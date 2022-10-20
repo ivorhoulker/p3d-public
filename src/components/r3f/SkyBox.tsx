@@ -37,7 +37,7 @@ const uniforms = {
   exponent: { value: 0.6 },
 };
 
-export default function Skydome(props: any) {
+export default function SkyBox() {
   return (
     <Sphere args={[1000]}>
       {/* <meshBasicMaterial attach="material" color={new Color(0x479eff)} side={BackSide}/> */}

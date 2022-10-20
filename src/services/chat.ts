@@ -1,5 +1,5 @@
 import { client } from "../pages/_app";
-import { Chat } from "../types/chat";
+import { Chat } from "../types/Chat";
 
 export const auth = async() => {
     console.log(client.authStore)

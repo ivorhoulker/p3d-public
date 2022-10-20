@@ -1,13 +1,9 @@
-import { dehydrate, QueryClient, useQuery } from "@tanstack/react-query";
-import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from "next";
+import { dehydrate } from "@tanstack/react-query";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { User } from "pocketbase";
 import nookies from "nookies";
-import { client, queryClient } from "./_app";
-import Chat from "../components/Chat";
+import { client } from "./_app";
+import Chat from "../components/Chat/Chat";
 import { prefetchPocketList } from "../hooks/usePocketList";
 
 const getChat = async () => {

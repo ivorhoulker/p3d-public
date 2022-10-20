@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import Chat from "../components/Chat";
+import Chat from "../components/Chat/Chat";
 import { auth } from "../services/chat";
 import { client } from "./_app";
 import nookies from "nookies";
