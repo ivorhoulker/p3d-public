@@ -1,20 +1,25 @@
 import React from "react";
-import { usePlane } from "@react-three/cannon";
+import { useBox } from "@react-three/cannon";
 import { DoubleSide, Mesh } from "three";
 import { useTexture } from "@react-three/drei";
 
 export const Plane = () => {
-  const [ref] = usePlane(() => ({
-    mass: 1,
-    position: [0, 0, 0],
-    type: "Static",
+  const [ref] = useBox(() => ({
+    mass: 0,
+    position: [0, -50, 0],
+    args: [100, 100, 100],
+    type: "Dynamic",
+    // type: "Static",
     rotation: [-Math.PI / 2, 0, 0],
+    material: {
+      friction: 0,
+    },
   }));
   const colorMap = useTexture("concrete.jpg");
   return (
-    <mesh scale={50} ref={ref as React.Ref<Mesh>} receiveShadow>
-      <planeBufferGeometry />
-      <meshStandardMaterial map={colorMap} side={DoubleSide} roughness={1000} />
+    <mesh ref={ref as React.Ref<Mesh>} receiveShadow>
+      <boxBufferGeometry attach="geometry" args={[100, 100, 100]} />
+      <meshStandardMaterial map={colorMap} side={DoubleSide} roughness={0} />
     </mesh>
   );
 };

@@ -1,6 +1,5 @@
-import { FC, Ref } from "react";
+import { FC, Ref, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
-import { useCylinder } from "@react-three/cannon";
 import { Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
 import { KeyStateObject } from "../../types/KeyStateObject";
@@ -24,18 +23,18 @@ const Wheel: FC<{ type: WheelType; keyStates: KeyStateObject }> = ({
 
   const positionZ = type.startsWith("front") ? 1.2 : -1.3;
   const positionX = type.includes("Left") ? 1.1 : -1.1;
-  const rotationZ = type.includes("Left") ? Math.PI / 2 : -Math.PI / 2;
-  const [ref, api] = useCylinder(() => ({
-    mass: 10,
-    position: [positionX, 0, positionZ],
-    type: "Kinematic",
-    rotation: [0, 0, rotationZ],
-  }));
-
+  const rotationZ = type.includes("Left") ? -Math.PI / 2 : Math.PI / 2;
+  // const [ref, api] = useCylinder(() => ({
+  //   mass: 10,
+  //   position: [positionX, 0, positionZ],
+  //   type: "Kinematic",
+  //   rotation: [0, 0, rotationZ],
+  // }));
+  const ref = useRef<Mesh>(null);
   useFrame(() => {
     if (ref.current) {
-      const wheelSpeed = 10;
-      const wheelTurnSpeed = (wheelSpeed / 5) * 2;
+      const wheelSpeed = 4;
+      const wheelTurnSpeed = wheelSpeed / 2;
       let s = 0;
       if (type === "frontLeft" || type === "backLeft") {
         if (keyStates.w && type) s += wheelSpeed;
@@ -60,14 +59,14 @@ const Wheel: FC<{ type: WheelType; keyStates: KeyStateObject }> = ({
         else if (keyStates.d) s += wheelTurnSpeed;
       }
 
-      api.angularVelocity.set(s, 0, 0);
+      ref.current.rotation.set(ref.current.rotation.x + s, Math.PI, rotationZ);
     }
   });
   return (
     <mesh
       ref={ref as Ref<Mesh>}
-      // position={[1.2, 0, 0.9]}
-      // rotation={[0, 0, ((type.includes("left") ? 1 : -1) * Math.PI) / 2]}
+      position={[positionX, 0, positionZ]}
+      rotation={[Math.PI / 2, Math.PI, rotationZ]}
       scale={2}
     >
       {/* <cylinderBufferGeometry />

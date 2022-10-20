@@ -1,6 +1,6 @@
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { Physics } from "@react-three/cannon";
+import { Debug, Physics } from "@react-three/cannon";
 import SkyBox from "./SkyBox";
 import { PhysicsWorld } from "./PhysicsWorld";
 
@@ -14,9 +14,9 @@ export default function ThreeCanvas() {
 
       <SkyBox />
       <Physics gravity={[0, -9.8, 0]}>
-        {/* <Debug scale={1.1} color="black"> */}
-        <PhysicsWorld />
-        {/* </Debug> */}
+        <Debug scale={1.1} color="black">
+          <PhysicsWorld />
+        </Debug>
       </Physics>
     </Canvas>
   );

@@ -1,8 +1,8 @@
-import { useBox } from "@react-three/cannon";
+import { Triplet, useBox } from "@react-three/cannon";
 import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { FC, useEffect, useState } from "react";
-import { Vector3, Group } from "three";
+import { FC, useEffect, useRef, useState } from "react";
+import { Vector3, Quaternion, Mesh } from "three";
 import Wheel from "./Wheel";
 import Beetle from "./Beetle";
 import { KeyStateObject } from "../../types/KeyStateObject";
@@ -10,9 +10,10 @@ import {
   CAR_BASE_HEIGHT,
   CAR_ROTATION_SPEED,
   CAR_SPEED,
+  DEFAULT_CAMERA_X,
   DEFAULT_CAMERA_Y,
   DEFAULT_CAMERA_Z,
-} from "../../utils/theme";
+} from "../../utils/carConfig";
 
 const Player: FC = () => {
   const [keyStates, setKeyStates] = useState<KeyStateObject>({});
@@ -35,14 +36,20 @@ const Player: FC = () => {
   });
 
   const [ref, api] = useBox(() => ({
-    mass: 100,
+    mass: 200,
     position: [0, CAR_BASE_HEIGHT, 0],
-    type: "Kinematic",
+    type: "Dynamic",
     args: [2.2, 1.5, 3.5],
+    material: {
+      friction: 0,
+    },
   }));
-
+  const velocity = useRef<Triplet>([0, 0, 0]);
+  useEffect(() => {
+    api.velocity.subscribe((v) => (velocity.current = v));
+  }, [api.velocity]);
   useFrame((state, delta) => {
-    if (ref.current) {
+    if (ref.current && velocity.current) {
       const moveRight = keyStates.d;
       const moveLeft = keyStates.a;
       const strafeRight = keyStates.e;
@@ -50,7 +57,7 @@ const Player: FC = () => {
       const moveForward = keyStates.w;
       const moveBackward = keyStates.s;
 
-      const quaternion = ref.current.getWorldQuaternion(ref.current.quaternion);
+      const quaternion = ref.current.getWorldQuaternion(new Quaternion());
       api.angularVelocity.set(
         0,
         moveRight
@@ -68,9 +75,10 @@ const Player: FC = () => {
         .normalize()
         .multiplyScalar(CAR_SPEED);
       vel.applyQuaternion(quaternion);
-      api.velocity.set(vel.x, vel.y, vel.z);
+      api.velocity.set(vel.x, velocity.current[1], vel.z);
 
       const worldPosition = ref.current.getWorldPosition(new Vector3());
+      // api.applyLocalForce([vel.x, vel.y, vel.z], [0, 0, 0]);
       const lookAtPosition = new Vector3()
         .copy(worldPosition)
         .add(new Vector3(0, 0, 4).applyQuaternion(quaternion));
@@ -78,10 +86,16 @@ const Player: FC = () => {
       const cameraPosition = new Vector3()
         .copy(worldPosition)
         .add(
-          new Vector3(0, DEFAULT_CAMERA_Y, DEFAULT_CAMERA_Z).applyQuaternion(
-            quaternion
-          )
+          new Vector3(
+            DEFAULT_CAMERA_X,
+            DEFAULT_CAMERA_Y,
+            DEFAULT_CAMERA_Z
+          ).applyQuaternion(quaternion)
         );
+
+      //keep the car grounded with force to the Y axis... this is probably not the right way to do it
+      api.applyLocalImpulse([0, -100, 0], [1, 0, 1]);
+      api.applyLocalImpulse([0, -100, 0], [-1, 0, -1]);
 
       state.camera.position.lerp(cameraPosition, 5 * delta);
 
@@ -96,7 +110,7 @@ const Player: FC = () => {
         args={[70, 1.2, 1, 1000]}
         position={[0, CAR_BASE_HEIGHT + DEFAULT_CAMERA_Y, DEFAULT_CAMERA_Z]}
       />
-      <group ref={ref as React.Ref<Group>} castShadow>
+      <mesh ref={ref as React.Ref<Mesh>} castShadow>
         <Beetle />
         <Wheel type={"frontLeft"} keyStates={keyStates} />
         <Wheel type={"frontRight"} keyStates={keyStates} />
@@ -111,7 +125,7 @@ const Player: FC = () => {
           position={[0, -0.3, 0]}
           rotation={[Math.PI * 1.5, 0, 0]}
         />
-      </group>
+      </mesh>
     </>
   );
 };

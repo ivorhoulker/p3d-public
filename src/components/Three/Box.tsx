@@ -4,9 +4,10 @@ import { Mesh } from "three";
 
 export function Box({ position }: { position: Triplet }) {
   const [ref] = useBox(() => ({
-    mass: 10,
+    mass: 0,
     position: position,
-    type: "Dynamic",
+    // type: "Static",
+
     args: [2, 2, 2],
   }));
 

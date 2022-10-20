@@ -5,10 +5,10 @@ import { Box } from "./Box";
 import { Ball } from "./Ball";
 import { Triplet } from "@react-three/cannon";
 export const boxPositions: Array<Triplet> = [
-  [-1, 5, 16],
-  [-2, 5, -10],
-  [-10, 5, 16],
-  [8, 5, -10],
+  [-1, 1, 16],
+  [-2, 1, -10],
+  [-10, 1, 16],
+  [8, 1, -10],
 ];
 
 export const ballPositions: Array<Triplet> = [
