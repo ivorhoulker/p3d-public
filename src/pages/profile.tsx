@@ -6,11 +6,6 @@ import { client } from "./_app";
 import Chat from "../components/Chat/Chat";
 import { prefetchPocketList } from "../hooks/usePocketList";
 
-const getChat = async () => {
-  const data = await client.records.getFullList("chat", 100);
-  return JSON.parse(JSON.stringify(data));
-};
-
 export const getServerSideProps = (ctx: GetServerSidePropsContext) => {
   const cookies = nookies.get(ctx);
   if (cookies.pb_auth) {
@@ -40,9 +35,6 @@ export const getServerSideProps = (ctx: GetServerSidePropsContext) => {
 const Profile = ({}: InferGetServerSidePropsType<
   typeof getServerSideProps
 >) => {
-  // Show the user. No loading state is required
-  //   const { data } = useQuery(["chat"], getChat);
-  //   console.log({ data });
   const { email, id, profile } = client.authStore.model as User;
   return (
     <>
@@ -58,15 +50,3 @@ const Profile = ({}: InferGetServerSidePropsType<
 };
 
 export default Profile;
-
-// export async function getStaticProps() {
-//   const queryClient = new QueryClient();
-//   const client = new PocketBase("https://rooftoptheatre.com");
-//   await queryClient.prefetchQuery(["profile"], clie);
-
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient),
-//     },
-//   };
-// }

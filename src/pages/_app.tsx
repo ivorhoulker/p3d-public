@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import type { AppProps, AppType } from "next/app";
+import type { AppProps } from "next/app";
 import PocketBase from "pocketbase";
 import {
   QueryClient,
@@ -9,18 +9,10 @@ import {
 import { useEffect } from "react";
 
 export const client = new PocketBase(process.env.DATABASE_URL);
-// client.beforeSend = function (url, reqConfig) {
-//   // For list of the possible reqConfig properties check
-//   // https://developer.mozilla.org/en-US/docs/Web/API/fetch#options
-//   reqConfig.headers = Object.assign({}, reqConfig.headers, {
-//     Origin: "http://localhost:3000",
-//   });
-//   console.log(reqConfig);
-//   return reqConfig;
-// };
 
 export const queryClient = new QueryClient();
 
+// for SSR with react query:
 type CustomPageProps = { dehydratedState: unknown };
 
 const MyApp = ({ Component, pageProps }: AppProps<CustomPageProps>) => {
