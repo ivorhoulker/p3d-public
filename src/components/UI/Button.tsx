@@ -1,4 +1,4 @@
-import React, { HTMLProps, forwardRef } from "react";
+import { HTMLProps, forwardRef } from "react";
 
 import NextLink from "next/link";
 import classNames from "classnames";

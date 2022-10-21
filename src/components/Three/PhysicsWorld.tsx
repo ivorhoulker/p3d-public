@@ -1,12 +1,10 @@
-import React, { Suspense } from "react";
-
+import { Suspense } from "react";
 import { Ball } from "./Entities/Ball";
-import { Triplet, useBox } from "@react-three/cannon";
-
+import { Triplet } from "@react-three/cannon";
 import { Ground } from "./Entities/Ground";
 import Player from "./Entities/Player";
-import { Mesh } from "three";
 import { Cube } from "./Entities/Cube";
+
 export const boxPositions: Array<Triplet> = [
   [-1, 1, 16],
   [-2, 1, -10],

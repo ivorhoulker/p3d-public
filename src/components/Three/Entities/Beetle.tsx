@@ -1,5 +1,3 @@
-/* eslint-disable react/display-name */
-
 import { useGLTF } from "@react-three/drei";
 import { Mesh } from "three";
 

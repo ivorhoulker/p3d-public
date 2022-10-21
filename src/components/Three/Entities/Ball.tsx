@@ -1,4 +1,3 @@
-import React from "react";
 import { Triplet, useSphere } from "@react-three/cannon";
 import { Mesh } from "three";
 
