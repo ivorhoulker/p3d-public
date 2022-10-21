@@ -5,7 +5,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { Vector3, Quaternion, Mesh } from "three";
 import Wheel from "./Wheel";
 import Beetle from "./Beetle";
-import { KeyStateObject } from "../../types/KeyStateObject";
+import { KeyStateObject } from "../../../types/KeyStateObject";
 import {
   CAR_BASE_HEIGHT,
   CAR_ROTATION_SPEED,
@@ -13,7 +13,7 @@ import {
   DEFAULT_CAMERA_X,
   DEFAULT_CAMERA_Y,
   DEFAULT_CAMERA_Z,
-} from "../../utils/carConfig";
+} from "../../../utils/carConfig";
 
 const Player: FC = () => {
   const [keyStates, setKeyStates] = useState<KeyStateObject>({});
@@ -57,7 +57,17 @@ const Player: FC = () => {
       const moveForward = keyStates.w;
       const moveBackward = keyStates.s;
 
-      const quaternion = ref.current.getWorldQuaternion(new Quaternion());
+      const playerWorldPosition = ref.current.getWorldPosition(new Vector3());
+      const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
+
+      const velocityToApply = new Vector3(
+        strafeRight ? -delta : strafeLeft ? delta : 0,
+        0,
+        moveForward ? delta : moveBackward ? -delta : 0
+      )
+        .normalize()
+        .multiplyScalar(CAR_SPEED);
+
       api.angularVelocity.set(
         0,
         moveRight
@@ -67,30 +77,22 @@ const Player: FC = () => {
           : 0,
         0
       );
-      const vel = new Vector3(
-        strafeRight ? -delta : strafeLeft ? delta : 0,
-        0,
-        moveForward ? delta : moveBackward ? -delta : 0
-      )
-        .normalize()
-        .multiplyScalar(CAR_SPEED);
-      vel.applyQuaternion(quaternion);
-      api.velocity.set(vel.x, velocity.current[1], vel.z);
+      velocityToApply.applyQuaternion(playerQuaternion);
+      api.velocity.set(velocityToApply.x, 0, velocityToApply.z);
 
-      const worldPosition = ref.current.getWorldPosition(new Vector3());
       // api.applyLocalForce([vel.x, vel.y, vel.z], [0, 0, 0]);
       const lookAtPosition = new Vector3()
-        .copy(worldPosition)
-        .add(new Vector3(0, 0, 4).applyQuaternion(quaternion));
+        .copy(playerWorldPosition)
+        .add(new Vector3(0, 0, 4).applyQuaternion(playerQuaternion));
       // .applyQuaternion(quaternion);
       const cameraPosition = new Vector3()
-        .copy(worldPosition)
+        .copy(playerWorldPosition)
         .add(
           new Vector3(
             DEFAULT_CAMERA_X,
             DEFAULT_CAMERA_Y,
             DEFAULT_CAMERA_Z
-          ).applyQuaternion(quaternion)
+          ).applyQuaternion(playerQuaternion)
         );
 
       //keep the car grounded with force to the Y axis... this is probably not the right way to do it

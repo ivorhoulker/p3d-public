@@ -1,9 +1,12 @@
 import React, { Suspense } from "react";
-import Player from "./Player";
-import { Plane } from "./Plane";
-import { Box } from "./Box";
-import { Ball } from "./Ball";
-import { Triplet } from "@react-three/cannon";
+
+import { Ball } from "./Entities/Ball";
+import { Triplet, useBox } from "@react-three/cannon";
+
+import { Ground } from "./Entities/Ground";
+import Player from "./Entities/Player";
+import { Mesh } from "three";
+import { Cube } from "./Entities/Cube";
 export const boxPositions: Array<Triplet> = [
   [-1, 1, 16],
   [-2, 1, -10],
@@ -21,9 +24,9 @@ export const ballPositions: Array<Triplet> = [
 export function PhysicsWorld() {
   return (
     <Suspense fallback={null}>
-      <Plane />
+      <Ground />
       {boxPositions.map((position, idx) => (
-        <Box position={position} key={idx} />
+        <Cube position={position} key={idx} />
       ))}
       {ballPositions.map((position, idx) => (
         <Ball position={position} key={idx} />

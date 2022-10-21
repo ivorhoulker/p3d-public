@@ -2,7 +2,7 @@ import { FC, Ref, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
-import { KeyStateObject } from "../../types/KeyStateObject";
+import { KeyStateObject } from "../../../types/KeyStateObject";
 
 useGLTF.preload("/wheel.glb");
 export const wheelTypes = [

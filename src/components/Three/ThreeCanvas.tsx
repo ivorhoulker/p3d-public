@@ -1,8 +1,9 @@
 import React from "react";
 import { Canvas } from "@react-three/fiber";
 import { Debug, Physics } from "@react-three/cannon";
-import SkyBox from "./SkyBox";
+
 import { PhysicsWorld } from "./PhysicsWorld";
+import SkyBox from "./Entities/SkyBox";
 
 export default function ThreeCanvas() {
   return (

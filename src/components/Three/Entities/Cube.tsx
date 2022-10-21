@@ -2,11 +2,11 @@ import React from "react";
 import { Triplet, useBox } from "@react-three/cannon";
 import { Mesh } from "three";
 
-export function Box({ position }: { position: Triplet }) {
+export function Cube({ position }: { position: Triplet }) {
   const [ref] = useBox(() => ({
     mass: 0,
     position: position,
-    // type: "Static",
+    type: "Dynamic",
 
     args: [2, 2, 2],
   }));
@@ -14,7 +14,7 @@ export function Box({ position }: { position: Triplet }) {
   return (
     <mesh ref={ref as React.Ref<Mesh>} castShadow>
       <boxBufferGeometry attach="geometry" args={[2, 2, 2]} />
-      <meshStandardMaterial color="white" />
+      <meshStandardMaterial color="red" />
     </mesh>
   );
 }

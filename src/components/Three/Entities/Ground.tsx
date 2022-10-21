@@ -3,7 +3,7 @@ import { useBox } from "@react-three/cannon";
 import { DoubleSide, Mesh } from "three";
 import { useTexture } from "@react-three/drei";
 
-export const Plane = () => {
+export const Ground = () => {
   const [ref] = useBox(() => ({
     mass: 0,
     position: [0, -50, 0],
