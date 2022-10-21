@@ -11,7 +11,7 @@ export const Ground = () => {
     // type: "Static",
     rotation: [-Math.PI / 2, 0, 0],
     material: {
-      friction: 0,
+      friction: 10,
     },
   }));
   const colorMap = useTexture("concrete.jpg");

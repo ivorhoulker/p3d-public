@@ -3,7 +3,7 @@ import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { FC, useEffect, useRef, useState } from "react";
 import { Vector3, Quaternion, Mesh } from "three";
-import Wheel from "./Wheel";
+import Wheel, { wheelTypes } from "./Wheel";
 import Beetle from "./Beetle";
 import { KeyStateObject } from "../../../types/KeyStateObject";
 import {
@@ -57,7 +57,18 @@ const Player: FC = () => {
       const moveForward = keyStates.w;
       const moveBackward = keyStates.s;
 
-      const playerWorldPosition = ref.current.getWorldPosition(new Vector3());
+      const playerWorldPosition = ref.current.getWorldPosition(
+        ref.current.position
+      );
+      // console.log(playerWorldPosition.y);
+      if (playerWorldPosition.y <= -25) {
+        api.position.set(0, CAR_BASE_HEIGHT, 0);
+        state.camera.position.set(
+          0,
+          CAR_BASE_HEIGHT + DEFAULT_CAMERA_Y,
+          DEFAULT_CAMERA_Z
+        );
+      }
       const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
 
       const velocityToApply = new Vector3(
@@ -78,7 +89,9 @@ const Player: FC = () => {
         0
       );
       velocityToApply.applyQuaternion(playerQuaternion);
-      api.velocity.set(velocityToApply.x, 0, velocityToApply.z);
+
+      //applying constant -10 velocity in y axis seems to keep the car grounded, need to test if it can be flipped though
+      api.velocity.set(velocityToApply.x, -10, velocityToApply.z);
 
       // api.applyLocalForce([vel.x, vel.y, vel.z], [0, 0, 0]);
       const lookAtPosition = new Vector3()
@@ -96,8 +109,8 @@ const Player: FC = () => {
         );
 
       //keep the car grounded with force to the Y axis... this is probably not the right way to do it
-      api.applyLocalImpulse([0, -100, 0], [1, 0, 1]);
-      api.applyLocalImpulse([0, -100, 0], [-1, 0, -1]);
+      // api.applyLocalImpulse([0, -100, 0], [1, 0, 1]);
+      // api.applyLocalImpulse([0, -100, 0], [-1, 0, -1]);
 
       state.camera.position.lerp(cameraPosition, 5 * delta);
 
@@ -114,10 +127,9 @@ const Player: FC = () => {
       />
       <mesh ref={ref as React.Ref<Mesh>} castShadow>
         <Beetle />
-        <Wheel type={"frontLeft"} keyStates={keyStates} />
-        <Wheel type={"frontRight"} keyStates={keyStates} />
-        <Wheel type={"backLeft"} keyStates={keyStates} />
-        <Wheel type={"backRight"} keyStates={keyStates} />
+        {wheelTypes.map((type) => (
+          <Wheel key={type} type={type} keyStates={keyStates} />
+        ))}
         <rectAreaLight
           intensity={1}
           color="lime"

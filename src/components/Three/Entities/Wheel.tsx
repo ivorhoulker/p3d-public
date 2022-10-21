@@ -24,16 +24,11 @@ const Wheel: FC<{ type: WheelType; keyStates: KeyStateObject }> = ({
   const positionZ = type.startsWith("front") ? 1.2 : -1.3;
   const positionX = type.includes("Left") ? 1.1 : -1.1;
   const rotationZ = type.includes("Left") ? -Math.PI / 2 : Math.PI / 2;
-  // const [ref, api] = useCylinder(() => ({
-  //   mass: 10,
-  //   position: [positionX, 0, positionZ],
-  //   type: "Kinematic",
-  //   rotation: [0, 0, rotationZ],
-  // }));
+
   const ref = useRef<Mesh>(null);
   useFrame(() => {
     if (ref.current) {
-      const wheelSpeed = 4;
+      const wheelSpeed = 10;
       const wheelTurnSpeed = wheelSpeed / 2;
       let s = 0;
       if (type === "frontLeft" || type === "backLeft") {

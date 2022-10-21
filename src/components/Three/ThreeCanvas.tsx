@@ -8,7 +8,7 @@ export default function ThreeCanvas() {
   return (
     <Canvas shadows>
       {/* <color attach="background" args={["#94ebd8"]} /> */}
-      <fog attach="fog" args={["#a0c1eb", 0, 60]} />
+      <fog args={["#a0c1eb", 0, 60]} />
       <ambientLight intensity={0.1} color={"#a0c1eb"} />
       <directionalLight intensity={0.2} color={"#ebe4a0"} castShadow />
 
