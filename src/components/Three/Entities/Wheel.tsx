@@ -27,6 +27,7 @@ const Wheel: FC<{ type: WheelType; keyStates: KeyStateObject }> = ({
 
   const ref = useRef<Mesh>(null);
   useFrame(() => {
+    // not sure this is performant
     if (ref.current) {
       const wheelSpeed = 10;
       const wheelTurnSpeed = wheelSpeed / 2;

@@ -8,6 +8,7 @@ import Beetle from "./Beetle";
 
 import {
   CAR_BASE_HEIGHT,
+  CAR_DOWNWARD_VELOCITY,
   CAR_ROTATION_SPEED,
   CAR_SPEED,
 } from "../../../constants/CAR";
@@ -15,6 +16,8 @@ import {
   DEFAULT_CAMERA_Y,
   DEFAULT_CAMERA_Z,
   DEFAULT_CAMERA_X,
+  CAMERA_LERP_SPEED,
+  LOOK_IN_FRONT_BY_OFFSET,
 } from "../../../constants/CAMERA";
 export type KeyStateObject = Record<string, boolean>;
 
@@ -58,7 +61,9 @@ const Player: FC = () => {
       const playerWorldPosition = ref.current.getWorldPosition(
         ref.current.position
       );
+      const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
 
+      //reset player position if they fall off the world
       if (playerWorldPosition.y <= -25) {
         api.position.set(0, CAR_BASE_HEIGHT, 0);
         state.camera.position.set(
@@ -67,7 +72,6 @@ const Player: FC = () => {
           DEFAULT_CAMERA_Z
         );
       }
-      const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
 
       const velocityToApply = new Vector3(
         strafeRight ? -delta : strafeLeft ? delta : 0,
@@ -75,7 +79,8 @@ const Player: FC = () => {
         moveForward ? delta : moveBackward ? -delta : 0
       )
         .normalize()
-        .multiplyScalar(CAR_SPEED);
+        .multiplyScalar(CAR_SPEED)
+        .applyQuaternion(playerQuaternion);
 
       api.angularVelocity.set(
         0,
@@ -86,15 +91,15 @@ const Player: FC = () => {
           : 0,
         0
       );
-      velocityToApply.applyQuaternion(playerQuaternion);
 
       //applying constant -10 velocity in y axis seems to keep the car grounded, need to test if it can be flipped though
-      api.velocity.set(velocityToApply.x, -10, velocityToApply.z);
+      api.velocity.set(
+        velocityToApply.x,
+        -Math.abs(CAR_DOWNWARD_VELOCITY),
+        velocityToApply.z
+      );
 
-      const lookAtPosition = new Vector3()
-        .copy(playerWorldPosition)
-        .add(new Vector3(0, 0, 4).applyQuaternion(playerQuaternion));
-
+      //lerp the camera to player position with offset behind and above
       const cameraPosition = new Vector3()
         .copy(playerWorldPosition)
         .add(
@@ -104,8 +109,16 @@ const Player: FC = () => {
             DEFAULT_CAMERA_Z
           ).applyQuaternion(playerQuaternion)
         );
+      state.camera.position.lerp(cameraPosition, CAMERA_LERP_SPEED * delta);
 
-      state.camera.position.lerp(cameraPosition, 5 * delta);
+      //get a position in front of the car for the camera to look at
+      const lookAtPosition = new Vector3()
+        .copy(playerWorldPosition)
+        .add(
+          new Vector3(0, 0, LOOK_IN_FRONT_BY_OFFSET).applyQuaternion(
+            playerQuaternion
+          )
+        );
 
       state.camera.lookAt(lookAtPosition);
       state.camera.updateProjectionMatrix();
