@@ -10,8 +10,9 @@ export const Ground = () => {
     type: "Dynamic",
     rotation: [-Math.PI / 2, 0, 0],
     material: {
-      friction: 10,
+      friction: 0,
     },
+    collisionFilterGroup: 1,
   }));
   const colorMap = useTexture("concrete.jpg");
   return (

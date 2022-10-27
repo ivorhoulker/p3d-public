@@ -11,7 +11,7 @@ const Beetle = () => {
   const nodes = n as Record<string, Mesh>;
   return (
     <mesh>
-      <group position={[0, -0.2, 0]}>
+      <group position={[0, -0.2, 0]} frustumCulled={false}>
         <mesh
           castShadow
           material={materials["Black paint"]}

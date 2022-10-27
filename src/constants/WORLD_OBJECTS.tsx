@@ -1,6 +1,6 @@
 import { Triplet } from "@react-three/cannon";
 
-export const BOX_POSITIONS: Array<Triplet> = [
+export const PILLAR_POSITIONS: Array<Triplet> = [
   [-1, 1, 16],
   [-2, 1, -10],
   [-10, 1, 16],

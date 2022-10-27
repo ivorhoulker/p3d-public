@@ -1,18 +1,19 @@
 import { Triplet, useBox } from "@react-three/cannon";
 import { DoubleSide, Mesh } from "three";
 
-export function Cube({ position }: { position: Triplet }) {
+export function Pillar({ position }: { position: Triplet }) {
   const [ref] = useBox(() => ({
-    mass: 1,
+    mass: 0,
     position: position,
     type: "Dynamic",
-    args: [2, 2, 2],
+    args: [2, 20, 2],
+    userData: { resetMomentum: true },
   }));
 
   return (
     <mesh
       ref={ref as React.Ref<Mesh>}
-      name="cube"
+      name="pillar"
       castShadow
       frustumCulled={false}
     >

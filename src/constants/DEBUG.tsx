@@ -1,1 +1,1 @@
-export const DEBUG_OBJECTS = true;
+export const DEBUG_OBJECTS = false;

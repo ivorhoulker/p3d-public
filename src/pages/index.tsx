@@ -1,5 +1,11 @@
+import { Stats } from "@react-three/drei";
 import ThreeCanvas from "../components/Three/ThreeCanvas";
 
 export default function IndexPage() {
-  return <ThreeCanvas />;
+  return (
+    <>
+      <Stats />
+      <ThreeCanvas />
+    </>
+  );
 }
