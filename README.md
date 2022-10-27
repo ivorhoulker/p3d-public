@@ -1,6 +1,20 @@
 # Presence (Starter for 3D Version, 2022-23)
 
-This is the start of the project with the fundamental parts decided, before it becomes complicated.
+This is a basic 3d project without any multiplayer connectivity stuff.
+
+## With yarn:
+
+```bash
+yarn
+yarn dev
+```
+
+## With npm:
+
+```bash
+npm i
+npm run dev
+```
 
 ## Packages
 
@@ -15,16 +29,3 @@ This is the start of the project with the fundamental parts decided, before it b
 
 - [TailwindCSS](https://tailwindcss.com)
 - [classnames](https://github.com/JedWatson/classnames)
-
-### React/TS stuff
-
-- State: [@tanstack/react-query](https://tanstack.com/query/v4/?from=reactQueryV3&original=https://react-query-v3.tanstack.com/)
-- For validation: [zod](https://github.com/colinhacks/zod)
-
-### Database
-
-- [Pocketbase](https://pocketbase.io/)
-
-### WebRTC
-
-- [Mediasoup](https://mediasoup.org/)

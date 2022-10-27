@@ -8,7 +8,6 @@ export const Ground = () => {
     position: [0, -50, 0],
     args: [100, 100, 100],
     type: "Dynamic",
-    // type: "Static",
     rotation: [-Math.PI / 2, 0, 0],
     material: {
       friction: 10,

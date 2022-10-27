@@ -2,7 +2,7 @@ import { FC, Ref, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { Mesh } from "three";
 import { useFrame } from "@react-three/fiber";
-import { KeyStateObject } from "../../../types/KeyStateObject";
+import { KeyStateObject } from "./Player";
 
 useGLTF.preload("/wheel.glb");
 export const wheelTypes = [
@@ -64,8 +64,6 @@ const Wheel: FC<{ type: WheelType; keyStates: KeyStateObject }> = ({
       rotation={[Math.PI / 2, Math.PI, rotationZ]}
       scale={2}
     >
-      {/* <cylinderBufferGeometry />
-      <meshStandardMaterial color="red" /> */}
       <mesh material={materials.Rubber} geometry={nodes.wheel_1?.geometry} />
       <mesh material={materials.Steel} geometry={nodes.wheel_2?.geometry} />
       <mesh material={materials.Chrom} geometry={nodes.wheel_3?.geometry} />

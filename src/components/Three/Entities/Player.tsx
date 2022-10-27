@@ -1,19 +1,22 @@
-import { Triplet, useBox } from "@react-three/cannon";
+import { useBox } from "@react-three/cannon";
 import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Vector3, Quaternion, Mesh } from "three";
 import Wheel, { wheelTypes } from "./Wheel";
 import Beetle from "./Beetle";
-import { KeyStateObject } from "../../../types/KeyStateObject";
+
 import {
   CAR_BASE_HEIGHT,
   CAR_ROTATION_SPEED,
   CAR_SPEED,
-  DEFAULT_CAMERA_X,
+} from "../../../constants/CAR";
+import {
   DEFAULT_CAMERA_Y,
   DEFAULT_CAMERA_Z,
-} from "../../../utils/carConfig";
+  DEFAULT_CAMERA_X,
+} from "../../../constants/CAMERA";
+export type KeyStateObject = Record<string, boolean>;
 
 const Player: FC = () => {
   const [keyStates, setKeyStates] = useState<KeyStateObject>({});
@@ -21,12 +24,10 @@ const Player: FC = () => {
   useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {
       setKeyStates((s) => ({ ...s, [event.key]: true }));
-      //   keyStates[event.code] = true;
     };
     const onKeyup = (event: KeyboardEvent) => {
       setKeyStates((s) => ({ ...s, [event.key]: false }));
     };
-    //document.addEventListener("mousemove", onMousemove);
     document.addEventListener("keydown", onKeydown);
     document.addEventListener("keyup", onKeyup);
     return () => {
@@ -44,12 +45,9 @@ const Player: FC = () => {
       friction: 0,
     },
   }));
-  const velocity = useRef<Triplet>([0, 0, 0]);
-  useEffect(() => {
-    api.velocity.subscribe((v) => (velocity.current = v));
-  }, [api.velocity]);
+
   useFrame((state, delta) => {
-    if (ref.current && velocity.current) {
+    if (ref.current) {
       const moveRight = keyStates.d;
       const moveLeft = keyStates.a;
       const strafeRight = keyStates.e;
@@ -60,7 +58,7 @@ const Player: FC = () => {
       const playerWorldPosition = ref.current.getWorldPosition(
         ref.current.position
       );
-      // console.log(playerWorldPosition.y);
+
       if (playerWorldPosition.y <= -25) {
         api.position.set(0, CAR_BASE_HEIGHT, 0);
         state.camera.position.set(
@@ -93,11 +91,10 @@ const Player: FC = () => {
       //applying constant -10 velocity in y axis seems to keep the car grounded, need to test if it can be flipped though
       api.velocity.set(velocityToApply.x, -10, velocityToApply.z);
 
-      // api.applyLocalForce([vel.x, vel.y, vel.z], [0, 0, 0]);
       const lookAtPosition = new Vector3()
         .copy(playerWorldPosition)
         .add(new Vector3(0, 0, 4).applyQuaternion(playerQuaternion));
-      // .applyQuaternion(quaternion);
+
       const cameraPosition = new Vector3()
         .copy(playerWorldPosition)
         .add(
@@ -107,10 +104,6 @@ const Player: FC = () => {
             DEFAULT_CAMERA_Z
           ).applyQuaternion(playerQuaternion)
         );
-
-      //keep the car grounded with force to the Y axis... this is probably not the right way to do it
-      // api.applyLocalImpulse([0, -100, 0], [1, 0, 1]);
-      // api.applyLocalImpulse([0, -100, 0], [-1, 0, -1]);
 
       state.camera.position.lerp(cameraPosition, 5 * delta);
 

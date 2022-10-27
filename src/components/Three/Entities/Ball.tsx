@@ -5,9 +5,6 @@ export function Ball({ position }: { position: Triplet }) {
   const [ref] = useSphere(() => ({
     mass: 10,
     position,
-    // material: {
-    //   friction: 200
-    // }
   }));
 
   return (
