@@ -60,6 +60,7 @@ const Player: FC = () => {
       const strafeLeft = keyStates.q;
       const moveForward = keyStates.w;
       const moveBackward = keyStates.s;
+      const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
 
       const isMoving = moveForward || moveBackward || strafeLeft || strafeRight;
       const N = 10;
@@ -96,6 +97,7 @@ const Player: FC = () => {
         speedVector.current.x = 0;
         speedVector.current.z = 0;
       }
+      // speedVector.current.applyQuaternion(playerQuaternion);
       const playerWorldPosition = ref.current.getWorldPosition(
         ref.current.position
       );
@@ -128,9 +130,10 @@ const Player: FC = () => {
           : 0,
         0
       );
-      const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
-      const velocityToApply =
-        speedVector.current.applyQuaternion(playerQuaternion);
+      // const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
+      const velocityToApply = new Vector3()
+        .copy(speedVector.current)
+        .applyQuaternion(playerQuaternion);
 
       //applying constant -10 velocity in y axis seems to keep the car grounded, need to test if it can be flipped though
       api.velocity.set(
