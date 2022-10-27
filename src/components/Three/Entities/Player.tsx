@@ -43,9 +43,9 @@ const Player: FC = () => {
     mass: 200,
     position: [0, CAR_BASE_HEIGHT, 0],
     type: "Dynamic",
-    args: [2.2, 1.5, 3.5],
+    args: [2.2, 1.5, 3.5], //rough size of the car model
     material: {
-      friction: 0,
+      friction: 0, // slide, no real wheel physics
     },
   }));
 
@@ -136,6 +136,7 @@ const Player: FC = () => {
         {wheelTypes.map((type) => (
           <Wheel key={type} type={type} keyStates={keyStates} />
         ))}
+
         <rectAreaLight
           intensity={1}
           color="lime"
