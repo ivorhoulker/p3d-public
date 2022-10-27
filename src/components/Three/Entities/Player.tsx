@@ -106,49 +106,75 @@ const Player: FC = () => {
       }
 
       const diff = CAR_MOMENTUM * delta;
-      if (moveForward && speedVector.current.z < CAR_SPEED) {
+      if (moveForward && !moveBackward && speedVector.current.z < CAR_SPEED) {
         speedVector.current.z += diff;
       }
-      if (moveBackward && speedVector.current.z > -CAR_SPEED) {
+      if (moveBackward && !moveForward && speedVector.current.z > -CAR_SPEED) {
         speedVector.current.z -= diff;
       }
-      if (strafeLeft && speedVector.current.x < CAR_SPEED) {
+      if (strafeLeft && !strafeRight && speedVector.current.x < CAR_SPEED) {
         speedVector.current.x += diff;
       }
-      if (strafeRight && speedVector.current.x > -CAR_SPEED) {
+      if (strafeRight && !strafeLeft && speedVector.current.x > -CAR_SPEED) {
         speedVector.current.x -= diff;
       }
-      if (!strafeLeft && !strafeRight && speedVector.current.x > 0) {
+      if (
+        ((!strafeLeft && !strafeRight) || (strafeLeft && strafeRight)) &&
+        speedVector.current.x > 0
+      ) {
         if (speedVector.current.x - diff < 0) speedVector.current.x = 0;
         else speedVector.current.x -= diff;
       }
-      if (!strafeLeft && !strafeRight && speedVector.current.x < 0) {
+      if (
+        ((!strafeLeft && !strafeRight) || (strafeLeft && strafeRight)) &&
+        speedVector.current.x < 0
+      ) {
         if (speedVector.current.x + diff > 0) speedVector.current.x = 0;
         else speedVector.current.x += diff;
       }
-      if (!moveForward && !moveBackward && speedVector.current.z > 0) {
+      if (
+        ((!moveForward && !moveBackward) || (moveForward && moveBackward)) &&
+        speedVector.current.z > 0
+      ) {
         if (speedVector.current.z - diff < 0) speedVector.current.z = 0;
         else speedVector.current.z -= diff;
       }
-      if (!moveForward && !moveBackward && speedVector.current.z < 0) {
+      if (
+        ((!moveForward && !moveBackward) || (moveForward && moveBackward)) &&
+        speedVector.current.z < 0
+      ) {
         if (speedVector.current.z + diff > 0) speedVector.current.z = 0;
         else speedVector.current.z += diff;
       }
       speedVector.current.y = -10;
 
       const angularDiff = CAR_ROTATION_SPEED * 2 * delta;
-      if (moveLeft && rotationalSpeedVector.current.y < CAR_ROTATION_SPEED) {
+      if (
+        moveLeft &&
+        !moveRight &&
+        rotationalSpeedVector.current.y < CAR_ROTATION_SPEED
+      ) {
         rotationalSpeedVector.current.y += angularDiff;
       }
-      if (moveRight && rotationalSpeedVector.current.y > -CAR_ROTATION_SPEED) {
+      if (
+        moveRight &&
+        !moveLeft &&
+        rotationalSpeedVector.current.y > -CAR_ROTATION_SPEED
+      ) {
         rotationalSpeedVector.current.y -= angularDiff;
       }
-      if (!moveLeft && !moveRight && rotationalSpeedVector.current.y > 0) {
+      if (
+        ((!moveLeft && !moveRight) || (moveLeft && moveRight)) &&
+        rotationalSpeedVector.current.y > 0
+      ) {
         if (rotationalSpeedVector.current.y - angularDiff < 0)
           rotationalSpeedVector.current.y = 0;
         else rotationalSpeedVector.current.y -= angularDiff;
       }
-      if (!moveLeft && !moveRight && rotationalSpeedVector.current.y < 0) {
+      if (
+        ((!moveLeft && !moveRight) || (moveLeft && moveRight)) &&
+        rotationalSpeedVector.current.y < 0
+      ) {
         if (rotationalSpeedVector.current.y + angularDiff > 0)
           rotationalSpeedVector.current.y = 0;
         else rotationalSpeedVector.current.y += angularDiff;
