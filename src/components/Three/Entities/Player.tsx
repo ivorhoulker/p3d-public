@@ -1,7 +1,7 @@
-import { useBox } from "@react-three/cannon";
+import { Triplet, useBox } from "@react-three/cannon";
 import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Vector3, Quaternion, Mesh } from "three";
 import Wheel, { wheelTypes } from "./Wheel";
 import Beetle from "./Beetle";
@@ -19,6 +19,8 @@ import {
   CAMERA_LERP_SPEED,
   LOOK_IN_FRONT_BY_OFFSET,
 } from "../../../constants/CAMERA";
+import { lerp } from "three/src/math/MathUtils";
+import { inRange } from "../../../helpers/inRange";
 export type KeyStateObject = Record<string, boolean>;
 
 const Player: FC = () => {
@@ -48,6 +50,7 @@ const Player: FC = () => {
       friction: 0, // slide, no real wheel physics
     },
   }));
+  const speedVector = useRef<Vector3>(new Vector3());
 
   useFrame((state, delta) => {
     if (ref.current) {
@@ -58,10 +61,44 @@ const Player: FC = () => {
       const moveForward = keyStates.w;
       const moveBackward = keyStates.s;
 
+      const isMoving = moveForward || moveBackward || strafeLeft || strafeRight;
+      const N = 10;
+      if (moveForward && speedVector.current.z < CAR_SPEED) {
+        speedVector.current.z += N * delta;
+      }
+      if (moveBackward && speedVector.current.z > -CAR_SPEED) {
+        speedVector.current.z -= N * delta;
+      }
+      if (strafeLeft && speedVector.current.x < CAR_SPEED) {
+        speedVector.current.x += N * delta;
+      }
+      if (strafeRight && speedVector.current.x > -CAR_SPEED) {
+        speedVector.current.x -= N * delta;
+      }
+      if (!strafeLeft && !strafeRight && speedVector.current.x > 0) {
+        speedVector.current.x -= N * delta;
+      }
+      if (!strafeLeft && !strafeRight && speedVector.current.x < 0) {
+        speedVector.current.x += N * delta;
+      }
+      if (!moveForward && !moveBackward && speedVector.current.z > 0) {
+        speedVector.current.z -= N * delta;
+      }
+      if (!moveForward && !moveBackward && speedVector.current.z < 0) {
+        speedVector.current.z += N * delta;
+      }
+
+      const R = 7 * delta;
+      if (
+        inRange(speedVector.current.x, -R, R) &&
+        inRange(speedVector.current.z, -R, R)
+      ) {
+        speedVector.current.x = 0;
+        speedVector.current.z = 0;
+      }
       const playerWorldPosition = ref.current.getWorldPosition(
         ref.current.position
       );
-      const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
 
       //reset player position if they fall off the world
       if (playerWorldPosition.y <= -25) {
@@ -73,14 +110,14 @@ const Player: FC = () => {
         );
       }
 
-      const velocityToApply = new Vector3(
-        strafeRight ? -delta : strafeLeft ? delta : 0,
-        0,
-        moveForward ? delta : moveBackward ? -delta : 0
-      )
-        .normalize()
-        .multiplyScalar(CAR_SPEED)
-        .applyQuaternion(playerQuaternion);
+      // const velocityToApply = new Vector3(
+      //   strafeRight ? -delta : strafeLeft ? delta : 0,
+      //   0,
+      //   moveForward ? delta : moveBackward ? -delta : 0
+      // )
+      //   .normalize()
+      //   .multiplyVectors()
+      //   .applyQuaternion(playerQuaternion);
 
       api.angularVelocity.set(
         0,
@@ -91,6 +128,9 @@ const Player: FC = () => {
           : 0,
         0
       );
+      const playerQuaternion = ref.current.getWorldQuaternion(new Quaternion());
+      const velocityToApply =
+        speedVector.current.applyQuaternion(playerQuaternion);
 
       //applying constant -10 velocity in y axis seems to keep the car grounded, need to test if it can be flipped though
       api.velocity.set(
