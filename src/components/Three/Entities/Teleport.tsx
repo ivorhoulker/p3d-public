@@ -1,5 +1,5 @@
+import { DoubleSide, Group } from "three";
 import { Triplet, useBox } from "@react-three/cannon";
-import { DoubleSide, Group, Mesh } from "three";
 
 export function Teleport({ position }: { position: Triplet }) {
   const [ref] = useBox(() => ({

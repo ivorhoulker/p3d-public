@@ -1,13 +1,9 @@
-import { Canvas } from "@react-three/fiber";
 import { Debug, Physics } from "@react-three/cannon";
 
+import { Canvas } from "@react-three/fiber";
+import { DEBUG_OBJECTS } from "../../constants/DEBUG";
 import { PhysicsWorld } from "./PhysicsWorld";
 import SkyBox from "./SkyBox";
-import { DEBUG_OBJECTS } from "../../constants/DEBUG";
-
-import { DEFAULT_CAMERA_Y, DEFAULT_CAMERA_Z } from "../../constants/CAMERA";
-import { CAR_BASE_HEIGHT } from "../../constants/CAR";
-import { PerspectiveCamera, Stats } from "@react-three/drei";
 
 export default function ThreeCanvas() {
   return (

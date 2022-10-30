@@ -1,36 +1,29 @@
-import { Triplet, useBox, useRaycastAny } from "@react-three/cannon";
-import { PerspectiveCamera } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { FC, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { Vector3, Quaternion, Mesh, DoubleSide, Group } from "three";
-import Wheel, { wheelTypes } from "./Wheel";
-import Beetle from "./Beetle";
-
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   CAR_BASE_HEIGHT,
-  CAR_DOWNWARD_VELOCITY,
   CAR_ROTATION_SPEED,
   CAR_SPEED,
 } from "../../../constants/CAR";
-import {
-  DEFAULT_CAMERA_Y,
-  DEFAULT_CAMERA_Z,
-  DEFAULT_CAMERA_X,
-  CAMERA_LERP_SPEED,
-  LOOK_IN_FRONT_BY_OFFSET,
-} from "../../../constants/CAMERA";
-import { inRange } from "../../../helpers/inRange";
+import { FC, useEffect, useRef } from "react";
+import { Group, Quaternion, Vector3 } from "three";
+import { Triplet, useBox } from "@react-three/cannon";
+import Wheel, { wheelTypes } from "./Wheel";
+
+import Beetle from "./Beetle";
+import { PerspectiveCamera } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+
 export type KeyStateObject = Record<string, boolean>;
 
 const Player: FC = () => {
-  const [keyStates, setKeyStates] = useState<KeyStateObject>({});
+  const keyStates = useRef<KeyStateObject>({});
 
   useEffect(() => {
     const onKeydown = (event: KeyboardEvent) => {
-      setKeyStates((s) => ({ ...s, [event.key]: true }));
+      keyStates.current[event.key] = true;
     };
     const onKeyup = (event: KeyboardEvent) => {
-      setKeyStates((s) => ({ ...s, [event.key]: false }));
+      keyStates.current[event.key] = false;
     };
     document.addEventListener("keydown", onKeydown);
     document.addEventListener("keyup", onKeyup);
@@ -42,14 +35,10 @@ const Player: FC = () => {
 
   const [ref, api] = useBox(() => ({
     mass: 1,
-    broadphase: "Naive",
     allowSleep: false,
-    sleepSpeedLimit: 1,
-
-    // position: [0, CAR_BASE_HEIGHT + 1, 0],
-    // linearDamping: 0,
+    position: [0, CAR_BASE_HEIGHT + 1, 0],
+    linearDamping: 0,
     type: "Dynamic",
-    // shouldInvalidate: true,
     args: [2.2, 1.5, 3.5], //rough size of the car model
     onCollideBegin(e) {
       console.log(e);
@@ -64,7 +53,7 @@ const Player: FC = () => {
     },
     material: {
       friction: 0, // slide, no real wheel physics
-      restitution: 10,
+      restitution: 0,
     },
     collisionFilterGroup: 1,
   }));
@@ -83,19 +72,25 @@ const Player: FC = () => {
     return unsubscribe;
   }, []);
 
-  useFrame((state, delta) => {
+  const rotation = useRef<Triplet>([0, 0, 0]);
+  useEffect(() => {
+    const unsubscribe = api.rotation.subscribe((v) => (rotation.current = v));
+    return unsubscribe;
+  }, []);
+
+  useFrame((_state, delta) => {
     if (ref.current) {
-      const moveRight = keyStates.d;
-      const moveLeft = keyStates.a;
-      const strafeRight = keyStates.e;
-      const strafeLeft = keyStates.q;
-      const moveForward = keyStates.w;
-      const moveBackward = keyStates.s;
+      const moveRight = keyStates.current.d;
+      const moveLeft = keyStates.current.a;
+      const strafeRight = keyStates.current.e;
+      const strafeLeft = keyStates.current.q;
+      const moveForward = keyStates.current.w;
+      const moveBackward = keyStates.current.s;
       // //these mutate!
       const playerQuaternion = new Quaternion();
       ref.current.getWorldQuaternion(playerQuaternion);
-      const playerWorldPosition = new Vector3();
-      ref.current.getWorldPosition(playerWorldPosition);
+      // const playerWorldPosition = new Vector3();
+      // ref.current.getWorldPosition(playerWorldPosition);
 
       const CAR_MOMENTUM = 19;
       if (resetMomentum.current && !moveBackward && !moveForward) {
@@ -191,10 +186,6 @@ const Player: FC = () => {
   return (
     <>
       <group ref={ref as React.Ref<Group>} castShadow>
-        {/* <mesh>
-          <boxBufferGeometry attach="geometry" args={[2, 2, 2]} />
-          <meshStandardMaterial color="red" side={DoubleSide} roughness={0} />
-        </mesh> */}
         <PerspectiveCamera
           // frames={1}
           makeDefault
@@ -205,14 +196,9 @@ const Player: FC = () => {
         />
         <Beetle />
         {wheelTypes.map((type) => (
-          <Wheel key={type} type={type} keyStates={keyStates} />
+          <Wheel key={type} type={type} keyStates={keyStates.current} />
         ))}
-        {/* <PerspectiveCamera
-          makeDefault
-          args={[70, 1.2, 1, 1000]}
-          position={[0, CAR_BASE_HEIGHT + DEFAULT_CAMERA_Y, DEFAULT_CAMERA_Z]}
-          // lookAt={ref.current}
-        /> */}
+
         <rectAreaLight
           intensity={1}
           color="lime"
