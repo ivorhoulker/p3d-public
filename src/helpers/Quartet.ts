@@ -1,0 +1,1 @@
+export type Quartet = [number, number, number, number]

@@ -2,6 +2,8 @@
 
 This is a basic 3d project without any multiplayer connectivity stuff.
 
+It is deployed on vercel: [https://p3d-public.vercel.app/]
+
 ## With yarn:
 
 ```bash
